@@ -36,7 +36,7 @@ struct _JSONObject{
 typedef struct _JSONObject JSONObject;
 
 void JSON_object_init(JSONObject* obj);
-void JSON_object_add(JSONObject* obj, KeyValuePair pair);
+void JSON_object_add(JSONObject* obj, KeyValuePair* pair);
 void JSON_object_free(JSONObject* obj);
 
 struct _JSONDocument{
@@ -62,11 +62,25 @@ void key_value_pair_free(KeyValuePair* pair){
 
 
 void JSON_object_init(JSONObject* obj){
-
+    obj->heap_size = 1;
+    obj->size=0;
+    obj->key_value_pairs = (KeyValuePair*) malloc(sizeof(KeyValuePair) * obj->heap_size);
 }
 
-void JSON_object_add(JSONObject* obj, KeyValuePair pair);
-void JSON_object_free(JSONObject* obj);
+void JSON_object_add(JSONObject* obj, KeyValuePair* pair){
+    if(obj->size >= obj->heap_size){
+        obj->heap_size *= 2;
+        obj->key_value_pairs = realloc(obj->key_value_pairs, sizeof(KeyValuePair) * obj->heap_size);
+    }
+
+    obj->key_value_pairs[obj->size++] = *pair;
+}
+
+void JSON_object_free(JSONObject* obj){
+    for(int i=0; i<obj->size; i++){
+        key_value_pair_free(&obj->key_value_pairs[i]);
+    }
+}
 
 
 
