@@ -1,7 +1,14 @@
 #include "ljson.h"
 
 int main(){
-    puts("helllll");
+
+    JSONDocument doc;
+
+    if(load_JSON_document(&doc, "test.json")){
+        
+    }
+
+
 
     return 0;
 }
