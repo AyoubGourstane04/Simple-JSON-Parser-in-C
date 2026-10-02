@@ -100,7 +100,7 @@ void JSON_document_add_obj(JSONDocument* doc, JSONObject* obj){
         doc->objects = realloc(doc->objects, sizeof(JSONObject) * doc->heap_size);
     }
 
-    doc->objects[obj->size++] = *obj;
+    doc->objects[doc->size++] = *obj;
 }
 
 int JSON_document_load(JSONDocument* doc, char* path){
@@ -108,7 +108,7 @@ int JSON_document_load(JSONDocument* doc, char* path){
     FILE* file = fopen(path, "r");
 
     if(!file){
-        fprintf(stderr, "Cannot open file %s\n", path);
+        fprintf(stderr, "Cannot open file '%s'\n", path);
         return FALSE;
     }
 
@@ -123,20 +123,97 @@ int JSON_document_load(JSONDocument* doc, char* path){
 
     buff[size] = '\0';
 
-    doc->objects = NULL;
+    // puts(buff);
 
+    JSON_document_init(doc);
 
+    char lex[256];
+    int lexi = 0;
+    int i = 0;
 
+    KeyValuePair* pair;
+    JSONObject* obj;
 
+    JSON_object_init(obj);
 
+    while(buff[i] != '\0'){
+        // White space
+        // if(buff[i] == ' ' && buff[i+1] == ' '){
+        //     puts("ha");
+        //     i+=2;
+        //     continue;
+        // }
 
+        //puts("h1");
+        //start of the array
+        if(buff[i] == '['){
+            puts("hhhh");
+            i++;
+            while(buff[i] != ']'){
+                //start of the object
+                if(buff[i] == '{'){
+                    puts("h2");
+                    i++;
 
+                    while(buff[i] != '}'){
+                        puts("h3");
+                        // Get the key
+                        if(buff[i] == '"' || buff[i] == '\''){
+                            i++;
+                            puts("h4");
+                            while(buff[i] != '"' && buff[i] != '\'')
+                                lex[lexi++] = buff[i++];
+
+                            lex[lexi] = '\0';
+                            pair->key = strdup(lex);
+                            lexi=0;
+                            i++;
+                            continue;   
+                        }else{
+                            i++;
+                            continue;
+                        }
+
+                        // Get the key
+                        if(buff[i] == ':'){
+                            i++;
+                            puts("h5");
+                            while(buff[i] != '"' && buff[i] != '\'')
+                                lex[lexi++] = buff[i++];
+                            
+                            lex[lexi] = '\0';
+                            pair->value = strdup(lex);
+                            lexi = 0;
+                            i++;
+                            continue;
+                        }else{
+                            i++;
+                            continue;
+                        }
+
+                        if(buff[i] == ','){
+                            i++;
+                            continue;
+                        }
+
+                        JSON_object_add(obj, pair);
+                    }
+                }else{
+                    i++;
+                    continue;
+                }
+            }
+            JSON_document_add_obj(doc, obj);
+        }
+        i++; 
+        continue;
+    }
     return TRUE;
 
 }
 
 void JSON_document_free(JSONDocument* doc){
-
+    free(doc);
 }
 
 
