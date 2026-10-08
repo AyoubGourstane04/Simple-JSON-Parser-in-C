@@ -1,6 +1,11 @@
-[
-    {
-        "key1": "value1",
-        "key2": "value2"
-    }
-]
+{
+  "name": "john doe",
+  "age": 22,
+  "student": true,
+  "city": "Gotham",
+  "address": {
+    "street": "Main Street",
+    "country": "Krypton"
+  },
+  "nothing": null
+}
